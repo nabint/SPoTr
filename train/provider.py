@@ -212,24 +212,61 @@ def jitter_point_cloud(batch_data, sigma=0.01, clip=0.05):
     jittered_data += batch_data
     return jittered_data
 
-def shift_point_cloud(batch_data):
+
+def shift_point_cloud(batch_data, shift_range=0.1):
+    """
+    batch_data: torch.Tensor [B, N, 3]
+    """
+    if isinstance(batch_data, np.ndarray):
+        # original numpy version for compatibility
+        B, N, C = batch_data.shape
+        shifts = np.random.uniform(-shift_range, shift_range, (B, 3))
+        batch_data[:, :, 0:3] += shifts[:, None, :]
+        return batch_data
+
+    # ---- Torch Version ----
     B, N, C = batch_data.shape
-    shifts = (torch.rand(B, 3, device=batch_data.device) - 0.5) * 0.1
-    batch_data[:, :, 0:3] += shifts[:, None, :]
+    shifts = (torch.rand(B, 3, device=batch_data.device) * 2 - 1) * shift_range
+    batch_data[:, :, 0:3] = batch_data[:, :, 0:3] + shifts[:, None, :]
     return batch_data
 
+
 def random_scale_point_cloud(batch_data, scale_low=0.8, scale_high=1.25):
-    """ Randomly scale the point cloud. Scale is per point cloud.
-        Input:
-            BxNx3 array, original batch of point clouds
-        Return:
-            BxNx3 array, scaled batch of point clouds
     """
+    Works with both numpy and torch tensors.
+    """
+    if isinstance(batch_data, np.ndarray):
+        B, N, C = batch_data.shape
+        scales = np.random.uniform(scale_low, scale_high, B)
+        batch_data[:, :, 0:3] *= scales[:, None, None]
+        return batch_data
+
+    # torch version
     B, N, C = batch_data.shape
-    scales = np.random.uniform(scale_low, scale_high, B)
-    for batch_index in range(B):
-        batch_data[batch_index,:,:] *= scales[batch_index]
+    scales = torch.empty(B, device=batch_data.device).uniform_(scale_low, scale_high)
+    batch_data[:, :, 0:3] = batch_data[:, :, 0:3] * scales[:, None, None]
     return batch_data
+
+
+
+# def shift_point_cloud(batch_data):
+#     B, N, C = batch_data.shape
+#     shifts = (torch.rand(B, 3, device=batch_data.device) - 0.5) * 0.1
+#     batch_data[:, :, 0:3] += shifts[:, None, :]
+#     return batch_data
+
+# def random_scale_point_cloud(batch_data, scale_low=0.8, scale_high=1.25):
+#     """ Randomly scale the point cloud. Scale is per point cloud.
+#         Input:
+#             BxNx3 array, original batch of point clouds
+#         Return:
+#             BxNx3 array, scaled batch of point clouds
+#     """
+#     B, N, C = batch_data.shape
+#     scales = np.random.uniform(scale_low, scale_high, B)
+#     for batch_index in range(B):
+#         batch_data[batch_index,:,:] *= scales[batch_index]
+#     return batch_data
 
 def random_point_dropout(batch_pc, max_dropout_ratio=0.875):
     ''' batch_pc: BxNx3 '''
