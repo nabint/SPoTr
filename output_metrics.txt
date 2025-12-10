@@ -1,0 +1,10 @@
+{
+  'accuracy': np.float64(0.9788112676056338), 
+  'class_avg_accuracy': np.float64(0.8921822627437807), 
+  'class_avg_iou': np.float64(0.9333120114865328), 
+  'instance_avg_iou': np.float64(0.9348774572262855), 
+  'per_category_iou': {
+    'standing_trees': np.float64(1.0), 
+    'fallen_trees': np.float64(0.8666240229730656)
+  }
+}

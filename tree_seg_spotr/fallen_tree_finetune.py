@@ -392,10 +392,8 @@ def main_training_loop(
     best_instance_avg_iou = 0.0
 
     # Logging & checkpoint directory
-    exp_dir = Path(cfg.log_dir)
+    exp_dir = Path(cfg.weight_dir)
     exp_dir.mkdir(parents=True, exist_ok=True)
-    checkpoints_dir = exp_dir.joinpath("checkpoints")
-    checkpoints_dir.mkdir(exist_ok=True)
 
     # Training Code:
     for epoch in range(cfg.epochs):
@@ -446,7 +444,7 @@ def main_training_loop(
 
         # Save best by instance mIoU (same rule)
         if test_metrics["instance_avg_iou"] >= best_instance_avg_iou:
-            savepath = str(checkpoints_dir / "optimized_best_model.pth")
+            savepath = str(exp_dir / "optimized_best_model.pth")
             print("Saving model to", savepath)
             state = {
                 "epoch": epoch,
@@ -481,7 +479,7 @@ def main():
     parser.add_argument("--learning_rate", default=0.01, type=float)
     parser.add_argument("--gpu", type=str, default="0")
     parser.add_argument("--optimizer", type=str, default="Adam")
-    parser.add_argument("--log_dir", type=str, default="./logs")
+    parser.add_argument("--weight_dir", type=str, default="./weights")
     parser.add_argument("--decay_rate", type=float, default=1e-4)
 
     parser.add_argument("--npoint", type=int, default=2048)

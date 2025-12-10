@@ -71,8 +71,8 @@ datatransforms:
 
 
 pretrained_path: "weights/ShapeNetPart/ckpt_best.pth"   
-# pretrained_path: "weights/best_model.pth"   
-# pretrained_path: "weights/new_best_model.pth"  
+# pretrained_path: "logs/checkpoints/best_model.pth"   
+# pretrained_path: "logs/checkpoints/new_best_model.pth"  
 
 dataset:
   train_root: "./data/"
